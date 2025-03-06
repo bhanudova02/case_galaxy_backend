@@ -375,7 +375,7 @@ app.use(express.json());
 
 
 mongoose
-  .connect("mongodb+srv://bhanudova:4DD21Z5VwuUREztS@cluster0.smqqy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+  .connect("mongodb+srv://bhanudova03:TB7nLd6Q41i7iewx@ecommerce-ui.zonik.mongodb.net/?retryWrites=true&w=majority&appName=ecommerce-ui")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
