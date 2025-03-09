@@ -345,7 +345,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const { Password } = require("@mui/icons-material");
+const { Password } = require("@mui/icons-material");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
@@ -375,9 +375,14 @@ app.use(express.json());
 
 
 mongoose
-  .connect("mongodb+srv://bhanudova03:TB7nLd6Q41i7iewx@ecommerce-ui.zonik.mongodb.net/?retryWrites=true&w=majority&appName=ecommerce-ui")
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
+const PORT = process.env.PORT || 5000;
 
 // Product Schema
 const productSchema = new mongoose.Schema({
@@ -741,6 +746,24 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
+app.get("/api/translations/:lang", async (req, res) => {
+  try {
+    const { lang } = req.params;
+    const translation = await mongoose.connection.db
+      .collection("translations")
+      .findOne({ language: lang });
+
+    if (!translation) {
+      return res.status(404).json({ error: "Translations not found" });
+    }
+
+    res.json(translation.translations);
+  } catch (error) {
+    console.error("Error fetching translations:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 app.get("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -756,8 +779,17 @@ app.get("/api/products/:id", async (req, res) => {
 // In your Express backend
 app.post("/api/add-products", async (req, res) => {
   try {
-    const products = req.body; // This will be an array with one product
-    await Product.insertMany(arrayOfProducts);
+    const products = req.body; // This should be an array or a single object
+    console.log("Received products:", products);
+
+    if (!Array.isArray(products)) {
+      // If it's a single object, convert it into an array
+      await Product.create(products);
+    } else {
+      // If it's already an array, insert multiple
+      await Product.insertMany(products);
+    }
+
     res.status(201).json({ message: "Products added successfully" });
   } catch (error) {
     console.error("Error adding products:", error);
@@ -890,7 +922,7 @@ app.patch("/api/admin/orders/:orderId", authMiddleware, async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
