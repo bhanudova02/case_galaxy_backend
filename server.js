@@ -353,7 +353,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow your frontend
+    origin: "https://case-galaxy.vercel.app", // Allow your frontend
     methods: "GET,POST,PUT,PATCH,DELETE",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true, // Allow cookies and authentication headers
@@ -364,7 +364,7 @@ app.use(express.json());
 
 // app.use(
 //   cors({
-//     origin: "http://localhost:3000", // Your frontend URL
+//     origin: "https://case-galaxy.vercel.app", // Your frontend URL
 //     credentials: true,
 //   })
 // );
